@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import './style.css';
 
-const App = () => {
-    const [prompt, setPrompt] = useState('');
-    const [response, setResponse] = useState('');
+interface AppProps {}
+interface AppState {
+    prompt: string;
+    response: string;
+}
 
-    const handleSubmit = async (e) => {
+const App: React.FC<AppProps> = () => {
+    const [prompt, setPrompt] = useState<AppState['prompt']>('');
+    const [response, setResponse] = useState<AppState['response']>('');
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const res = await fetch('/generate', {
             method: 'POST',
@@ -52,4 +57,4 @@ const App = () => {
     );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+export default App;

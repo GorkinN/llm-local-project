@@ -187,7 +187,12 @@ class AiderRAG:
             "backend": ["fastapi", "endpoint", "api", "pydantic", "async", "route", "rest", "бэкенд", "бекенд"],
             "testing": ["test", "pytest", "coverage", "mock", "fixture", "тест", "тестировани"],
             "ai": ["ollama", "llm", "model", "generate", "ai", "prompt", "модел", "генерац"],
-            "frontend": ["react", "html", "css", "js", "frontend", "ui", "интерфейс", "фронтенд"],
+            "frontend": [
+                "react", "html", "css", "js", "javascript", "typescript", "frontend", 
+                "ui", "интерфейс", "фронтенд", "веб", "web", "компонент", "component",
+                "tailwind", "верстка", "стили", "styles", "axios", "websocket",
+                "браузер", "browser", "dom", "responsive", "адаптив"
+            ],
             "security": ["security", "auth", "cors", "validation", "token", "безопасн", "аутентифик"],
             "database": ["sqlalchemy", "database", "sql", "repository", "orm", "баз данных", "бд"],
             "performance": ["performance", "cache", "optimiz", "streaming", "производительн", "оптимизац", "кэшир"],
@@ -241,7 +246,7 @@ class AiderRAG:
         return rules[:5]
     
     def run_aider(self, query: str, files: List[str] = None):
-        """Запускает Aider с релевантными правилами"""
+        """Запускает Aider в Docker с релевантными правилами"""
         print("\n" + "="*60)
         print("🤖 Анализ запроса...")
         
@@ -258,20 +263,52 @@ class AiderRAG:
         else:
             print("⚠️ Правила не найдены")
         
-        cmd = ["aider"]
+        # Формируем команду для Docker
+        current_dir = os.getcwd()
         
+        cmd_parts = [
+            "docker", "run", "-it", "--rm",
+            "--gpus", "all",
+            "-v", f"{current_dir}:/app",
+            "-e", "OLLAMA_API_BASE=http://host.docker.internal:11434",
+            "aider-full",  
+        ]
+        
+        # Добавляем файлы если есть
         if files:
-            cmd.extend(files)
+            # Конвертируем пути для Docker
+            docker_files = []
+            for f in files:
+                # Убираем текущую директорию из пути
+                f_clean = f.replace(current_dir, "").lstrip("\\/")
+                docker_files.append(f_clean)
+            cmd_parts.extend(docker_files)
         
+        # Добавляем правила
         for rule in rules:
-            cmd.extend(["--read", rule])
+            # Конвертируем Windows путь в Docker путь
+            docker_rule = rule.replace("\\", "/")
+            # Убираем текущую директорию
+            docker_rule = docker_rule.replace(current_dir.replace("\\", "/"), "").lstrip("/")
+            # Добавляем /app/
+            docker_rule = "/app/" + docker_rule
+            cmd_parts.extend(["--read", docker_rule])
         
-        cmd.extend(["--message", query])
+        # Добавляем запрос
+        cmd_parts.extend(["--message", query])
         
-        print("\n🚀 Запускаю Aider...")
+        print(f"🔧 Docker команда:")
+        print(f"   docker run -it --rm --gpus all -v {current_dir}:/app ...")
+        print("\n🚀 Запускаю Aider в Docker...")
         print("="*60 + "\n")
         
-        subprocess.run(cmd)
+        try:
+            subprocess.run(cmd_parts)
+        except FileNotFoundError:
+            print("❌ Docker не найден!")
+            print("Установите Docker Desktop или запустите Docker")
+        except Exception as e:
+            print(f"❌ Ошибка запуска: {e}")
     
     def rebuild(self):
         """Пересоздает векторное хранилище"""
