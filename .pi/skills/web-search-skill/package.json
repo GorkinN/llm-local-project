@@ -1,0 +1,12 @@
+{
+  "name": "web-search-skill",
+  "version": "1.0.0",
+  "description": "Web search skill for pi.dev",
+  "main": "web_search_skill.js",
+  "scripts": {
+    "start": "node web_search_skill.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "pi-skill-code-generator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Pi skill: generate code via direct Ollama API call, bypassing Pi's tool system.",
+  "main": "code_generator.js",
+  "type": "commonjs",
+  "bin": {
+    "pi-code-generator": "./code_generator.js"
+  },
+  "scripts": {
+    "test": "node code_generator.js '{\"prompt\": \"Write hello world in Python\"}'"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {},
+  "license": "MIT"
+}
