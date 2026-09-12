@@ -1,6 +1,6 @@
 ---
 name: code-generator
-description: Generate code by calling an Ollama model directly, bypassing Pi's tool system. Use this when you need clean code output from a model that does not support function calling (e.g., qwen2.5-coder:14b-instruct).
+description: Generate code by calling an Ollama model directly, bypassing Pi's tool system. Optionally save the generated code to a file to avoid filling the agent's context.
 ---
 
 # Code Generator
@@ -20,18 +20,19 @@ Use this skill when:
 
 JSON object with the following fields:
 
-| Field         | Required | Default                                                                                                                    | Description                                 |
-| :------------ | :------- | :------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------ |
-| `prompt`      | yes      | —                                                                                                                          | Task description for code generation.       |
-| `model`       | no       | `qwen2.5-coder:14b-instruct`                                                                                               | Ollama model name.                          |
-| `system`      | no       | `"You are a code generator. Output only code without explanations, without markdown wrappers, and without introductions."` | System prompt.                              |
-| `temperature` | no       | `0.2`                                                                                                                      | Sampling temperature.                       |
-| `max_tokens`  | no       | `8192`                                                                                                                     | Maximum tokens to generate (`num_predict`). |
+| Field         | Required | Default                         | Description                                                                                              |
+| :------------ | :------- | :------------------------------ | :------------------------------------------------------------------------------------------------------- |
+| `prompt`      | yes      | —                               | Task description for code generation.                                                                    |
+| `model`       | no       | `qwen2.5-coder:14b-instruct`    | Ollama model name.                                                                                       |
+| `system`      | no       | `"You are a code generator..."` | System prompt.                                                                                           |
+| `temperature` | no       | `0.2`                           | Sampling temperature.                                                                                    |
+| `max_tokens`  | no       | `8192`                          | Maximum tokens to generate (`num_predict`).                                                              |
+| `output`      | no       | —                               | Path to save the generated code. If set, the code is written to this file and only metadata is returned. |
 
 ## Usage
 
 ```bash
-node node .pi/skills/code-generator/code_generator.js '{"prompt": "<requested-functionality>"}'
+node .pi/skills/code-generator/code_generator.js '{"prompt": "Write a Python function that prints hello world", "output": "src/hello-world.py"}'
 ```
 
 Accepts promt:
@@ -41,7 +42,7 @@ Accepts promt:
 
 ## Output
 
-JSON object:
+### Without `output` (code returned in response)
 
 ```json
 {
@@ -52,4 +53,29 @@ JSON object:
 }
 ```
 
-##
+### With output (code saved to file)
+
+{
+"success": true,
+"model": "qwen2.5-coder:14b-instruct",
+"file": "D:/repos/llm-local-project/src/hello-world.py",
+"lines": 8,
+"chars": 142,
+"tokens_generated": 21
+}
+
+### on error
+
+{
+"success": false,
+"error": "<error message>"
+}
+
+## Notes
+
+- Works directly with the Ollama API at http://localhost:11434.
+- Strips markdown code fences (...) from the response.
+- Creates parent directories automatically when output is set.
+- No external dependencies — uses only Node.js built-in modules.
+- Timeout: 120 seconds.
+- Always prefer output for anything larger than a few lines. Returning code in the response fills the agent's context and can cause truncation.
