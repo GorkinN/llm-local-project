@@ -1,0 +1,27 @@
+import torch
+from diffusers import StableDiffusionPipeline
+from PIL import Image
+
+def generate_pixel_art_cat(prompt, resolution=(64, 64), num_images=1, output_path="pixel_art_cat.png"):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    model_id = "stabilityai/stable-diffusion-xl-base-1.0"
+    pipe = StableDiffusionPipeline.from_pretrained(model_id, torch_dtype=torch.float16)
+    pipe = pipe.to(device)
+
+    try:
+        generator = torch.Generator(device=device).manual_seed(42)
+        images = pipe(prompt=prompt, num_inference_steps=50, guidance_scale=7.5, generator=generator, height=resolution[1], width=resolution[0], num_images_per_prompt=num_images).images
+
+        if num_images == 1:
+            images[0].save(output_path)
+        else:
+            for i, img in enumerate(images):
+                img.save(f"{output_path}_{i}.png")
+
+        print(f"Image(s) saved to {output_path}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+if __name__ == "__main__":
+    generate_pixel_art_cat(prompt="a pixel art cat", resolution=(64, 64), num_images=1, output_path="pixel_art_cat.png")
