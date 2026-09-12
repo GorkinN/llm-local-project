@@ -1,6 +1,8 @@
 "use strict";
 
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 
 const OLLAMA_HOST = "localhost";
 const OLLAMA_PORT = 11434;
@@ -95,6 +97,14 @@ function callOllama(payload) {
   });
 }
 
+function writeCodeToFile(outputPath, code) {
+  const resolved = path.resolve(outputPath);
+  const dir = path.dirname(resolved);
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(resolved, code, "utf8");
+  return resolved;
+}
+
 async function main() {
   let input;
   try {
@@ -129,6 +139,10 @@ async function main() {
     typeof input.max_tokens === "number"
       ? input.max_tokens
       : DEFAULT_MAX_TOKENS;
+  const outputPath =
+    typeof input.output === "string" && input.output.trim()
+      ? input.output.trim()
+      : null;
 
   const payload = {
     model,
@@ -144,13 +158,29 @@ async function main() {
     const response = await callOllama(payload);
     const rawCode = response.response || "";
     const code = stripMarkdownFences(rawCode);
+    const tokensGenerated = response.eval_count || 0;
+
+    if (outputPath) {
+      const savedPath = writeCodeToFile(outputPath, code);
+      process.stdout.write(
+        JSON.stringify({
+          success: true,
+          model,
+          file: savedPath,
+          lines: code.split("\n").length,
+          chars: code.length,
+          tokens_generated: tokensGenerated,
+        }),
+      );
+      return;
+    }
 
     process.stdout.write(
       JSON.stringify({
         success: true,
         model,
         code,
-        tokens_generated: response.eval_count || 0,
+        tokens_generated: tokensGenerated,
       }),
     );
   } catch (err) {
