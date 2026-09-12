@@ -1,6 +1,7 @@
 ---
 name: web-search-skill
 description: perform web searches and returns the main points of the search results. It uses DuckDuckGo API as primary source with Google as fallback.
+disable-model-invocation: true
 ---
 
 # Web Search Skill
