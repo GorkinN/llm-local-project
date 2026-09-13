@@ -1,0 +1,167 @@
+/**
+ * Error Boundary Stylesheet
+ * User-friendly error UI with smooth, professional appearance
+ */
+
+.error-boundary__fallback {
+  min-height: 'var(--app-content-height)';
+    
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  background-color: var(--surface-inverted-20);
+  padding: clamp(1.5rem, 3vw, 6rem);
+}
+
+.error-boundary__container {
+  max-width: 48rem;
+  text-align: center;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 'var(--space-8)';
+}
+
+/* Animated error icon */
+.error-boundary__icon {
+  width: clamp(3rem, 8vw, 6rem);
+  height: clamp(3rem, 8vw, 6rem);
+  
+  stroke: var(--semantic-error-500);
+  animation: bounce-in .7s cubic-bezier(.68,-.55,.265,1.55) both;
+}
+
+@keyframes {bounce-in {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}}
+
+.error-boundary__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.5rem);
+  line-height: 1.2;
+  
+  color: var(--semantic-error-600);
+  font-weight: 700;
+  margin: 0;
+}
+
+.error-boundary__description {
+  font-size: clamp(1.05rem, 2vw + .4rem, 1.4rem);
+  
+  color: var(--text-on-darker-500);
+  font-weight: 400;
+  line-height: 1.7;
+  max-width: 36rem;
+}
+
+.error-boundary__reload-btn {
+  appearance: none;
+  border: none;
+  
+  background-color: var(--semantic-success-500);
+  color: white;
+  font-family: var(--font-ui), system-ui, -apple-system, sans-serif;
+  font-size: inherit;
+  padding: 'clamp(.875rem, 2vw, 1.125rem)';
+  min-width: clamp(6.25rem, 16vw + 1rem, 9rem);
+  
+  border-radius: calc(var(--radius-sm) + .25rem);
+  font-weight: 600;
+  cursor: pointer;
+  
+  box-shadow: var(--card-card);
+  transition: 
+    transform .2s ease-in-out,
+    box-shadow .2s cubic-bezier(.4,0,.2,1),
+    background-color .2s linear;
+  
+  outline: none;
+}
+
+.error-boundary__reload-btn:hover {
+  background-color: var(--semantic-success-700);
+  transform: translateY(-.125rem);
+  box-shadow: 
+    0 'calc(var(--radius-sm) + .5rem)' .375em rgba(0, 0, 0, 0.1),
+    0 'calc(var(--radius-sm) + .5rem)' .625em rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__reload-btn:focus {
+  box-shadow: 
+    0 'calc(var(--radius-sm) + .5rem)' .375em rgba(0, 0, 0, 0.1),
+    0 'calc(var(--radius-sm) + .5rem)' .625em rgba(0, 0, 0, 0.1);
+}
+
+.error-boundary__reload-btn:active {
+  transform: translateY(0);
+  box-shadow: var(--card-card-sm);
+}
+
+/* Technical details toggle */
+.error-boundary__details {
+  text-align: left;
+  max-width: 36rem;
+  
+  background-color: var(--surface-on-darker-100);
+  padding: 'var(--space-8)';
+  border-radius: 'var(--radius-lg)';
+}
+
+.error-boundary__details summary {
+  font-size: 'clamp(.925rem, .75vw + .4rem, 1.1rem)';
+  color: var(--text-on-darker-600);
+  padding: 'var(--space-3) 0';
+}
+
+.error-boundary__error-output {
+  background-color: var(--surface-inverted-200);
+  border: 'calc(var(--radius-sm) - .5rem) solid #e5e7eb';
+  
+  font-family: 'var(--system-font-mono)';
+  font-size: clamp(.7rem, .6vw + .35rem, .875rem);
+  padding: 'var(--space-4)' 'var(--space-6)';
+  border-radius: var(--radius-sm);
+  
+  color: var(--neutral-700);;
+  line-height: 1.6;
+  max-height: min(32rem, calc(var(--app-content-height) - 8.5rem));
+  overflow: auto;
+}
+
+/* Debug info footer */
+.error-boundary__footer {
+  margin-top: 'var(--space-4)' 0;
+  font-size: clamp(.725rem, .6vw + .3rem, .85rem);
+  
+  color: var(--neutral-500);;
+  text-transform: uppercase;
+  letter-spacing: 'calc(var(--small-space-unit) / 1.5)';
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .error-boundary__title {
+    color: var(--semantic-error-200);
+  }
+  
+  .error-boundary__description {
+    color: var(--neutral-400);
+  }
+  
+  .error-boundary__details {
+    background-color: var(--surface-on-ligher-500);
+  }
+  
+  .error-boundary__error-output {
+    border-color: #374151;
+    color: var(--neutral-300);
+  }
+  
+  .error-boundary__footer {
+    color: var(--neutral-500);
+  }
+}
