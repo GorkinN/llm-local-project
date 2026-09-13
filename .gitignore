@@ -30,3 +30,6 @@ Thumbs.db
 
 # Aider
 .aider*
+
+# node
+node_modules
