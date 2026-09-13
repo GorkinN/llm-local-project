@@ -1,10 +1,10 @@
-/** @type {import('tailwindcss').Config} */
+/** @type {import('@tailwindcss/vite').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+  /** Tailwind v4 now uses source paths instead of content globs */
+  source: [
+    './index.html',
+    './src/**/*.{jsx,js,tsx,ts}',
   ],
-  darkMode: false,
 
   theme: {
     extend: {
@@ -67,8 +67,7 @@ export default {
           800: '#27272a', 900: '#18181b', 950: '#09090b',
         },
       },
-      
-      // Typography - Inter font with responsive clamp() sizing
+
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
@@ -100,5 +99,4 @@ export default {
       },
     },
   },
-  plugins: [],
 }
